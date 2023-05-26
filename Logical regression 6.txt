@@ -1,0 +1,56 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import confusion_matrix
+
+
+
+df = pd.read_csv('Social_Network_Ads.csv')
+df.head()
+
+
+
+x = df[['Age', 'EstimatedSalary']]
+y = df['Purchased']
+
+
+
+xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size=0.25)
+
+
+
+model = LogisticRegression()
+model.fit(xtrain, ytrain)
+
+
+model.score(xtest, ytest)
+
+
+
+scaler = MinMaxScaler()
+scaler.fit(xtrain)
+
+
+
+xtrain_scaled = scaler.transform(xtrain)
+xtest_scaled = scaler.transform(xtest)
+model.fit(xtrain_scaled, ytrain)
+
+
+
+model.score(xtest_scaled, ytest)
+
+
+
+xtrain_scaled
+
+
+
+y_pred = model.predict(xtest_scaled)
+y_pred
+
+
+
+confusion_matrix(ytest, y_pred)

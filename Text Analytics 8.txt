@@ -1,0 +1,90 @@
+Assignment no 07 Text Analytics 
+
+
+1. Importing the libraries :
+
+1.import nltk
+2.nltk.download('punkt')
+3.nltk.download('wordnet')
+4.nltk.download('averaged_perceptron_tagger')
+5.nltk.download('stopwords')
+6.from nltk import sent_tokenize
+7.from nltk import word_tokenize
+8.from nltk.corpus import stopwords
+
+
+2. text='Millions of people in India took part in an annual tree planting drive Sunday. More than 250 million saplings were planted in a single day across the country\'s most-populous state.\nThe campaign was led by Uttar Pradesh state government officials, lawmakers, and activists, in a bid to reduce carbon emissions and combat climate change.\nWhere were the trees planted?\nThe saplings were planted by volunteers in forests, farms, schools, and along riverbanks and highways.\n"We are committed to increasing the forest cover of Uttar Pradesh to over 15% of the total land area in the next five years,\'\' said state forest official Manoj Singh.\nAccording to another government official, the forest cover of the state has increased over the last few years.\n"There has been an increase of 127 sqare kilometers [79 sqare miles]Â\xa0in the forest cover in Uttar Pradesh as compared to 2017," a state government spokesperson was quoted as saying inÂ\xa0The Indian Express newspaper.\n"There has also been an increase in trees and plants. The tree cover has increased to 3.05%, as compared to the national average of 2.89%," the official said, citing the 2019 Forest Survey of India report.\nHow many saplings survive?\nUttar Pradesh State Forest Minister Dara Singh said the long-term survival of the saplings remains a concern, adding that usually only 60% of the saplings survive. The rest succumb to disease or lack of water.\nHowever, he said thatÂ\xa0about 80% of the saplings planted in the last four annual drives have survived.\n"All the regions where plantation is being carried out have been geo-tagged so that we can ascertain what exactly happened," Chauhan told The Pioneer newspaper.\n"These saplings carry QR codes so that officials can maintain a record and verify whether the saplings survived or not. Besides, teams have been formed to monitor progress of the plantation drive," he said.\nWhat is the extent of India\'s trMillions of people in India took part in an annual tree planting drive Sunday. More than 250 million saplings were planted in a single day across the country\'s most-populous state.\nThe campaign was led by Uttar Pradesh state government officials, lawmakers, and activists, in a bid to reduce carbon emissions and combat climate change.\nWhere were the trees planted?\nThe saplings were planted by volunteers in forests, farms, schools, and along riverbanks and highways.\n"We are committed to increasing the forest cover of Uttar Pradesh to over 15% of the total land area in the next five years,\'\' said state forest official Manoj Singh.\nAccording to another government official, the forest cover of the state has increased over the last few years.\n"There has been an increase of 127 sqare kilometers [79 sqare miles]Â\xa0in the forest cover in Uttar Pradesh as compared to 2017," a state government spokesperson was quoted as saying inÂ\xa0The Indian Express newspaper.\n"There has also been an increase in trees and plants. The tree cover has increased to 3.05%, as compared to the national average of 2.89%," the official said, citing the 2019 Forest Survey of India report.\nHow many saplings survive?ee planting project?\nIndia has vowed to have a third of its total land area, or 95 million hectares, under forest and tree cover by 2030.\nThe government has allocated $6.2 billion (â‚¬5.2 billion) for the tree-planting across the country.\nHowever, industrial development and a rapidly growing population has put further stress on the land.\n\n'
+
+3.Tokenization
+
+tokens = word_tokenize(text)
+print(tokens)
+
+4. POS Tagging
+
+postags = nltk.pos_tag(tokens)
+print(postags)
+
+5. Removing stop words
+
+stop_words = set(stopwords.words('english'))
+print(stop_words)
+
+6. 
+
+li = []
+for words in tokens:
+    if words not in stop_words:
+        li.append(words)
+print(li)
+
+7.Stemming :
+from nltk.stem import PorterStemmer
+from nltk.tokenize import sent_tokenize,word_tokenize
+
+ps = PorterStemmer()
+stemlist = []
+for words in li:
+    stemlist.append([words, ps.stem(words)])
+print(stemlist)
+
+8. Lemmatization
+wl = WordNetLemmatizer()
+lemilist = []
+for words in li:
+    lemilist.append([words, wl.lemmatize(words)])
+print(lemilist)
+
+9.Word frequency
+
+fre = dict()
+for words in li:
+    if words in fre:
+        fre[words] += 1
+    else:
+        fre[words] = 1
+print(fre)
+
+10.Calculate TF for each word in li
+
+total_words = len(li)
+tf = {}
+for word in li:
+    if word in tf:
+        tf[word] += 1 / total_words
+    else:
+        tf[word] = 1 / total_words
+
+print(tf)
+
+11.Calculate IDF for each word in li
+
+import math
+
+idf = {}
+num_docs = len(li)
+for word in li:
+    count = sum(1 for doc in x if word in doc)
+    idf[word] = math.log(num_docs / count) if count > 0 else 0
+
+print(idf)

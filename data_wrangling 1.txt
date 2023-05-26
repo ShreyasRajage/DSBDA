@@ -1,0 +1,33 @@
+Assignment no 01 Data  Wrangling:
+
+First download a dataset from kaggale and load it .
+
+1. Import required libraries
+        a) import pandas as pd
+        b)import numpy as np
+
+2. reading the dataset 
+         
+              df = pd.read_csv("File name or Location")
+
+3. to view dataset
+    
+     dataset
+
+4. Pandas daata frame functions for data processing
+
+    1. dataset.head()  =  print  first five rows 
+    2. dataset.tail()  =  print last five rows
+    3. dataset.index   =  index of the dataset 
+    4. dataset.shape   =  Return a tuple representing the dimensionality of the Dataset.
+    5. dataset.columns =  The column labels of the Dataset
+    6. dataset.dtypes  =  Return the dtypes in the Dataset
+    7. dataset['Column name] = Read the Data Column wise
+    8. dataset.iloc[5]  =  Purely integer-location based indexing for selection by position.
+    9. dataset[0:3]     =  Selecting via [], which slices the rows.
+    10.dataset.loc[:, ["Col_name1", "col_name2"]] =  Selection by label
+    11. dataset.iloc[:n, :] = a subset of the first n rows of the original data 
+    12. dataset.iloc[:, :n] = a subset of the first n columns of the original data 
+    13. dataset.iloc[:m, :n] = a subset of the first m rows and the first n columns
+    14. dataset.describe() = 
+    15. dataset.isnull().sum() = it tells that is there null values or not in dataset

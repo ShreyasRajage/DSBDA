@@ -1,0 +1,66 @@
+Assignment no 08  Data Visulization
+
+1. Import required libraries
+        a) import panda as pd
+        b) import numpy as np
+        c) import matplotlib.pyplot as plt
+        d) import seaborn as sns
+
+2. reading the dataset 
+         
+              df = pd.read_csv("File name or Location")
+
+3. to view dataset
+    
+     dataset
+
+4. Pandas daata frame functions for data processing
+
+    1. dataset.head()  =  print  first five rows 
+    2. dataset.tail()  =  print last five rows
+    3. dataset.index   =  index of the dataset 
+    4. dataset.shape   =  Return a tuple representing the dimensionality of the Dataset.
+    5. dataset.columns =  The column labels of the Dataset
+    6. dataset.dtypes  =  Return the dtypes in the Dataset
+    7. dataset.describe() 
+    8. dataset.isnull().sum() = it tells that is there null values or not in dataset
+
+5. 
+sns.countplot(data['Survived'])
+
+6. 
+sns.countplot(data['Pclass'])
+
+7.
+ sns.countplot(data['Embarked'])
+
+8.
+ sns.boxplot(data['Age'])
+ 
+9.
+ sns.boxplot(data['Fare'])
+
+10.
+ sns.distplot(data['Age'])
+
+11.
+ sns.countplot(data['Sex'])
+
+12.
+
+ tc = data.corr()
+sns.heatmap(tc, cmap="YlGnBu")
+plt.title('Correlation')
+
+data chy jagi df liha
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,55 @@
+Assignment no 09  Data Visulization 2
+
+1. Import required libraries
+        a) import pandas as pd
+        b) import numpy as np
+        c) import matplotlib.pyplot as plt
+        d) import seaborn as sns
+
+2. reading the dataset 
+         
+              df = pd.read_csv("File name or Location")
+
+3. to view dataset
+    
+     dataset
+
+4. Pandas daata frame functions for data processing
+
+    1. dataset.head()  =  print  first five rows 
+    2. dataset.tail()  =  print last five rows
+    3. dataset.index   =  index of the dataset 
+    4. dataset.shape   =  Return a tuple representing the dimensionality of the Dataset.
+    5. dataset.columns =  The column labels of the Dataset
+    6. dataset.dtypes  =  Return the dtypes in the Dataset
+    7. dataset.describe() 
+    8. dataset.isnull().sum() = it tells that is there null values or not in dataset
+
+5.
+sns.distplot(data['Fare'], bins=8)
+
+6.
+df.skew()
+
+7.
+
+sns.boxplot(x=df["Age"])
+
+8.
+
+df['Sex'].replace(['Male', 'Female'],
+                        [0, 1], inplace=True)
+
+8.
+
+sns.boxplot(x=df['Sex'],y=df['Age'],hue=df['Survived'])
+
+9.
+
+sns.boxplot(x=df['Sex'], y=df['Age'])
+
+10.
+
+sns.boxplot(x="Sex", y="Age", data=df,hue="Survived")
+
+

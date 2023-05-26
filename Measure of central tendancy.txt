@@ -1,0 +1,46 @@
+Asssignment no 3 Measure of central tendancy 
+
+
+1. Import the required libraries
+    
+     1. import pandas as pd
+     2. import numpy as np
+     3. import sklearn
+     4. from sklearn import datasets
+
+2. Reading the dataset and loading into pandas
+
+       dataset = pd.read_csv("File_name or location")
+
+3. To display dataset 
+
+         dataset
+
+4. Pandas data frame functions for data processing 
+
+     1. dataset.describe()
+     2. dataset.head()
+     3. dataset.tail()
+     4. dataset.shape
+     5. dataset.mean()
+     6. dataset.median()
+     7. dataset.mode()
+     8. # Calculated only for categorical data
+          df.column_name.mode()
+     9. df.groupby(['Species']).count()
+
+     10.Standard Deviation 
+          
+         1. dataset.std()
+         2. # Calculated only for categorical data
+             dataset.column_name.std()
+      
+
+     11. setosa_stats = dataset[dataset['Species'] == 'Iris-setosa'].describe()
+         setosa_stats
+
+     12. group statistics :
+        
+          grouped_stats = dataset.groupby('Species').agg(['mean', 'median', 'min', 'max', 'std'])
+          grouped_stats
+      

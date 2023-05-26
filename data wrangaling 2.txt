@@ -1,0 +1,89 @@
+ Assignment no 02 Data wrangling 2
+
+1. Import the libraries  
+   
+   1. import pandas as pd
+   2. import numpy as np 
+   3. import matplotlib.pyplot as plt
+
+2. Reading the dataset and loading into pandas
+
+  dataset = pd.read_csv("File_name or location")
+
+3. To display dataset 
+
+   dataset
+
+4. Pandas data frame functions for data processing
+  
+    1. dataset.head()  =  print  first five rows 
+    2. dataset.tail()  =  print last five rows
+    3. dataset.index   =  index of the dataset 
+    4. dataset.shape   =  Return a tuple representing the dimensionality of the Dataset.
+    5. dataset.columns =  The column labels of the Dataset
+    6. dataset.dtypes  =  Return the dtypes in the Dataset
+    7. dataset['Column name] = Read the Data Column wise
+    8. dataset.isnull().sum() = it tells that is there null values or not in dataset
+       (Imp)
+    9. dataset.describe()   
+
+5.
+
+ from sklearn import preprocessing
+label_encoder = preprocessing.LabelEncoder()
+dataset['gender'] = label_encoder.fit_transform(dataset['gender']);
+dataset['gender'].unique()
+
+(run)
+
+7.display the dataset once
+
+     dataset
+
+8.
+
+import matplotlib.pyplot as plt
+boxplot = dataset.boxplot()
+plt.show()
+
+(run)
+
+9.
+mean = dataset['math score'].mean()
+mean
+
+10.
+dataset['math score'].median()
+
+11. 
+
+std = dataset['math score'].std()
+std
+
+12. 
+dataset['math score'].mode()
+
+13.
+
+ import scipy.stats as stats
+
+14. 
+
+zscores = stats.zscore(dataset['math score'])
+  zscores
+
+15.
+
+threshold = 0
+
+16. outlier = []
+
+for i in df['math score']:
+    z = (i-mean)/std
+    if z > threshold:
+        outlier.append(i)
+print('outlier in dataset is', outlier)
+
+
+
+

@@ -1,0 +1,83 @@
+Assignment no 06  Data Analytics  2
+
+1. Import required libraries
+        a) import pandas as pd
+        b) import numpy as np
+        c) import matplotlib.pyplot as plt
+
+2. reading the dataset 
+         
+              df = pd.read_csv("File name or Location")
+
+3. to view dataset
+    
+     dataset
+
+4. Pandas daata frame functions for data processing
+
+    1. dataset.head()  =  print  first five rows 
+    2. dataset.tail()  =  print last five rows
+    3. dataset.index   =  index of the dataset 
+    4. dataset.shape   =  Return a tuple representing the dimensionality of the Dataset.
+    5. dataset.columns =  The column labels of the Dataset
+    6. dataset.dtypes  =  Return the dtypes in the Dataset
+    7. dataset.describe() 
+    8. dataset.isnull().sum() = it tells that is there null values or not in dataset
+
+    9. Defining X and Y for the model
+ X = data.drop(['Species'], axis=1)
+y = data.drop(['SepalLengthCm',  'SepalWidthCm',  'PetalLengthCm',  'PetalWidthCm','Id'], axis=1)
+print(X)
+print(y)
+print(X.shape)
+print(y.shape)
+
+
+    10.
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True)
+print(X_train.shape)
+print(X_test.shape)
+print(y_train.shape)
+print(y_test.shape)
+   
+ 11.from sklearn.naive_bayes import GaussianNB
+model = GaussianNB()
+model.fit(X_train, y_train)
+
+    12.
+
+y_pred = model.predict(X_test)
+model.score(X_test,y_test)
+
+    13.
+
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+print(accuracy_score(y_test, y_pred))
+
+    14.
+cm = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix = cm)
+print("Confusion matrix:")
+print(cm)
+
+    15.
+disp.plot()
+plt.show()
+
+16.
+def get_confusion_matrix_values(y_true, y_pred):
+    cm = confusion_matrix(y_true, y_pred)
+    return(cm[0][0], cm[0][1], cm[1][0], cm[1][1])
+
+TP, FP, FN, TN = get_confusion_matrix_values(y_test, y_pred)
+print("TP: ", TP)
+print("FP: ", FP)
+print("FN: ", FN)
+print("TN: ", TN)
+17.
+print("The Accuracy is ", (TP+TN)/(TP+TN+FP+FN))
+print("The precision is ", TP/(TP+FP))
+print("The recall is ", TP/(TP+FN))
+
