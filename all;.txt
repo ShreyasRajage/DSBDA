@@ -1,0 +1,994 @@
+clear;
+close all;
+clc;
+
+A = imread("car_1.jpg");
+subplot(2, 3, 1);
+imshow(A);
+title('Original image');
+%-------------------------------------------------------
+%Linear transformation
+%Identity
+B = A;
+subplot(2, 3, 2);
+imshow(B);
+title('Identity image');
+%--------------------------------------------------------
+% Negate the image
+%S = (L-1)-r => 255 - B
+I_neg = 255 - B; % Assuming B is an 8-bit grayscale image
+subplot(2, 3, 3);
+imshow(I_neg);
+title('Inverse image');
+%--------------------------------------------------------
+%Log transform
+%S = c*log(1+r), c=constat
+
+% Convert image to double
+img_double = double(B);
+
+% Get image dimensions
+[rows, cols] = size(img_double);
+
+% Get the maximum pixel value from the image
+r_max = max(img_double(:));
+
+% Desired output max value (usually 255)
+S = 255;
+
+% Compute constant C based on given formula
+C = S / log10(1 + r_max);
+
+% Initialize output image
+log_img = zeros(rows, cols);
+
+% Apply log base-10 transformation using for loop
+for i = 1:rows
+    for j = 1:cols
+       log_img(i,j) = C * log10(1 + img_double(i,j));
+    end
+end
+
+% Convert back to uint8 for display
+log_img_uint8 = uint8(log_img);
+
+% Display the original and log-transformed image
+subplot(2, 3, 4);
+imshow(log_img_uint8);
+title('Log Base-10 Transformed Image');
+%-----------------------------------------------------------------------
+%Exponential transformation
+%S = C(er - 1)
+C_expo = 0.1;
+expo_img = C_expo * (exp(im2double(B)) -1);
+subplot(2, 3, 5)
+imshow(expo_img);
+title('Exponential Transformed Image (e^x)');
+%------------------------------------------------------------------------
+
+%Power law/ Gamma transformation
+C_gamma = 1; % Set the gamma constant
+gammaval = 0.4
+gamma_img = C_gamma * (im2double(B) .^ gammaval);
+subplot(2, 3, 6)
+imshow(gamma_img);
+title('Power Law (Gamma) Transformed Image');
+
+%-------------------------------------------------------------------------
+
+a = imread("leader.jpg")
+% b = imhist(a)
+% subplot(4,2,1)
+% imshowpair(a,b,'montage')
+% title('Real image and Histogram');
+
+[m, n] = size(a);
+
+% rk = unique(a);
+% nk = numel(a);
+
+[nk,rk] = imhist(a);
+
+pdf = nk /(m*n);
+% cdf = cumsum(pdf); % Calculate the cumulative density function (CDF)
+
+cdf = zeros(size(pdf)); % Initialize cdf with zeros
+cdf(1) = pdf(1); % Initialize the first value of CDF
+for k = 2:length(pdf)
+    cdf(k) = cdf(k-1) + pdf(k); % Manually calculate the CDF
+end
+
+sk = zeros(size(rk)); % Initialize sk with zeros
+sk = 255.* cdf; 
+skround= round(sk);
+
+histogram_table = table(rk, nk ,pdf ,cdf,sk,skround,'VariableNames', { 'rk', 'nk', 'PDF','cdf','sk','skround'});
+disp(histogram_table);
+
+% Convert sk to uint8 for display purposes
+sk = uint8(sk);
+% Apply the mapping to the original image
+equalizedImage = sk(double(a) + 1);
+
+figure ;
+subplot(2,2,1),imshow(a),title('original image');
+subplot(2,2,2),bar(rk,nk),title('histogram');
+c = imhist(equalizedImage);
+subplot(2,2,3), imshow(equalizedImage), title('Equalized Image');
+subplot(2,2,4), bar(rk, c), title('Histogram of Equalized Image');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% -------------------------------------------------------------------------
+% Initialize an array to hold the PDF values
+% pdf_loop = zeros(size(a));
+% 
+% % Calculate the PDF for each pixel using a for loop
+% for i = 1:m*n
+%     for j = 1:n
+%         pixel_value = a(i, j);
+%         pdf_loop(pixel_value + 1) = pdf_loop(pixel_value + 1) + 1; % Increment the count for the pixel value
+%     end
+% end
+% 
+% % Normalize the PDF values
+% pdf_loop = pdf_loop / (m * n);
+% % The PDF is the same as the normalized histogram for discrete values
+% pdf_values = pdf;
+
+% Create a table from the calculated data
+% histogram_table = table(n, m, normalized_counts, pdf_values,'VariableNames', {'GrayLevel', 'nk_Counts', 'rk_Normalized', 'pk_PDF'});
+
+% Display the table
+% disp(histogram_table);
+
+
+
+
+
+
+
+
+
+
+% pdf = nk / (m * n);
+% subplot(6,3)
+% display(pdf,'pdf');
+
+% intensity_count = histcounts(a, [ nk; max(nk)+1]); % Count pixels for each intensity value
+% 
+%  Display the intensity and number of pixels
+%  for i = 1:length(intensity_values)
+%      fprintf('Intensity rk : %d, Number of Pixels nk : %d\n', intensity_values(i), intensity_count(i));
+% end
+
+
+
+3.
+clear;
+close all;
+clc;
+
+a = imread("cameraman.tif");
+b = im2gray(a);
+%noise_b = imnoise(a,"gaussian");
+%noise_b = imnoise(a,"salt & pepper");
+noise_b = imnoise(a,"speckle");
+noise_b = padarray(noise_b,[1,1],1,'both');
+[m, n] = size(noise_b);
+
+filtered_img = zeros(m, n);
+filtered_img1 = zeros(m, n);
+filtered_img2 = zeros(m, n);
+filtered_img3 = zeros(m, n);
+filtered_img4 = zeros(m, n);
+filtered_img5 = zeros(m, n);
+filtered_img6 = zeros(m, n);
+filtered_img7 = zeros(m, n);
+
+% Arithmetic mean filter on a grey scale image ----------------------------
+for i = 2:m-1
+    for j = 2:n-1
+        % Extract the 3x3 neighborhood
+        neighbors = noise_b(i-1:i+1, j-1:j+1);
+        
+        filtered_img(i, j) = mean(neighbors(:));
+    end
+end
+
+filtered_img = filtered_img(2:end-1, 2:end-1);
+filtered_img = uint8(filtered_img);
+
+% Geomatric mean filter on a grey scale image -----------------------------
+for i = 2:m-1
+    for j = 2:n-1
+        
+        neighbors1 = noise_b(i-1:i+1, j-1:j+1);
+       
+        filtered_img1(i, j) = prod(neighbors1(:))^(1/9);
+    end
+end
+
+filtered_img1 = filtered_img1(2:end-1, 2:end-1);
+filtered_img1 = uint8(filtered_img1);
+
+% Weighted average filter on a grey scale image ---------------------------
+
+weight_kernel = [1 2 1; 2 4 2; 1 2 1];
+weight_sum = sum(weight_kernel(:));
+
+for i = 2:m-1
+    for j = 2:n-1
+        
+        neighbors2 = double(noise_b(i-1:i+1, j-1:j+1));
+        
+        filtered_img2(i, j) = sum(sum(neighbors2 .* weight_kernel)) / weight_sum;
+    end
+end
+
+filtered_img2 = filtered_img2(2:end-1, 2:end-1);
+filtered_img2 = uint8(filtered_img2);
+
+% Non linear min spatial domain filter ------------------------------------
+
+for i = 2:m-1
+    for j = 2:n-1
+        
+        neighbors3 = noise_b(i-1:i+1, j-1:j+1);
+     
+        filtered_img3(i, j) = min(neighbors3(:));
+    end
+end
+
+filtered_img3 = filtered_img3(2:end-1, 2:end-1);
+filtered_img3 = uint8(filtered_img3);
+
+% Non linear max spatial domain filter ------------------------------------
+
+ for i = 2:m-1
+     for j = 2:n-1
+         
+         neighbors4 = noise_b(i-1:i+1, j-1:j+1);
+ 
+         filtered_img4(i, j) = max(neighbors4(:));
+     end
+ end
+ 
+ filtered_img4 = filtered_img4(2:end-1, 2:end-1);
+ filtered_img4 = uint8(filtered_img4);
+
+ % Non linear mid spatial domain filter ------------------------------------
+
+ for i = 2:m-1
+     for j = 2:n-1
+         
+         neighbors5 = noise_b(i-1:i+1, j-1:j+1);
+ 
+         filtered_img5(i, j) = (min(neighbors5(:))+max(neighbors5(:)))/2;
+     end
+ end
+ 
+ filtered_img5 = filtered_img5(2:end-1, 2:end-1);
+ filtered_img5 = uint8(filtered_img5);
+ 
+% Non linear median spatial domain filter ---------------------------------
+for i = 2:m-1
+    for j = 2:n-1
+        neighbors6 = noise_b(i-1:i+1, j-1:j+1);
+        filtered_img6(i, j) = median(neighbors6(:));
+    end
+end
+filtered_img6 = filtered_img6(2:end-1, 2:end-1);
+ filtered_img6 = uint8(filtered_img6);
+% Alpha trimmed mean filter on a grey scale image -----------------------
+alpha = 4;
+for i = 2:m-1
+    for j = 2:n-1
+        neighbors7 = noise_b(i-1:i+1, j-1:j+1);
+        sorted_neighbors = sort(neighbors7(:));
+        trimmed_neighbors = sorted_neighbors(alpha+1:end-alpha);
+        filtered_img7(i, j) = mean(trimmed_neighbors);
+    end
+end
+
+filtered_img7 = filtered_img7(2:end-1, 2:end-1);
+filtered_img7 = uint8(filtered_img7);
+
+% Mean Squared Error (MSE) calculation for each filtered image
+mse_arithmetic = mean((double(a) - double(filtered_img)).^2, 'all');
+mse_geometric = mean((double(a) - double(filtered_img1)).^2, 'all');
+mse_weighted = mean((double(a) - double(filtered_img2)).^2, 'all');
+mse_minimum = mean((double(a) - double(filtered_img3)).^2, 'all');
+mse_maximum = mean((double(a) - double(filtered_img4)).^2, 'all');
+mse_midpoint = mean((double(a) - double(filtered_img5)).^2, 'all');
+mse_median = mean((double(a) - double(filtered_img6)).^2, 'all');
+mse_alpha_trimmed = mean((double(a) - double(filtered_img7)).^2, 'all');
+
+% Display MSE results
+disp(['MSE of Arithmetic Mean Filtered Image: ', num2str(mse_arithmetic)]);
+disp(['MSE of Geometric Mean Filtered Image: ', num2str(mse_geometric)]);
+disp(['MSE of Weighted Average Filtered Image: ', num2str(mse_weighted)]);
+disp(['MSE of Minimum Filtered Image: ', num2str(mse_minimum)]);
+disp(['MSE of Maximum Filtered Image: ', num2str(mse_maximum)]);
+disp(['MSE of Midpoint Filtered Image: ', num2str(mse_midpoint)]);
+disp(['MSE of Median Filtered Image: ', num2str(mse_median)]);
+disp(['MSE of Alpha Trimmed Mean Filtered Image: ', num2str(mse_alpha_trimmed)]);
+
+ figure;
+ subplot(3,2,1); imshow(a); 
+ title('Original Image');
+ subplot(3,2,2); imshow(a); 
+ title('Greyscale Image');
+ subplot(3,2,3); imshow(noise_b); 
+ title('Image with Speckle Noise');
+ subplot(3,2,4); imshow(filtered_img); 
+ title('Arithmetic mean Filtered Image');
+ subplot(3,2,5); imshow(filtered_img1); 
+ title('Geometric mean Filtered Image');
+ subplot(3,2,6); imshow(filtered_img2); 
+ title(' Weighted Average Filtered Image');
+
+ figure;
+ subplot(3,2,1); imshow(noise_b); 
+ title('Image with speckle Noise');
+ subplot(3,2,2); imshow(filtered_img3); 
+ title('Mininum Filtered Image');
+ subplot(3,2,3); imshow(filtered_img4); 
+ title('Mixinum Filtered Image');
+ subplot(3,2,4); imshow(filtered_img5); 
+ title('Midpoint Filtered Image');
+ subplot(3,2,5); imshow(filtered_img6); 
+ title('Median Filtered Image');
+  subplot(3,2,6); imshow(filtered_img6); 
+ title('Alpha Trimmed mean Filter');
+
+4.
+clear;
+close all;
+clc;
+
+a = imread("coins.png"); 
+noise_b = imnoise(a,"gaussian");
+%noise_b = imnoise(a,"speckle"); 
+[m, n] = size(noise_b);
+p = 2 * m;
+q = 2 * n;
+
+zero_padded_image = zeros(p, q); 
+zero_padded_image(1:m, 1:n) = noise_b;
+
+u = p / 2; 
+v = q / 2;
+
+centered_image = zero_padded_image .* (-1)^m+n;
+F_centered_image = fft2(centered_image);
+% imshow(F_centered_image);
+% % 5. Design ideal low pass filter 
+D0 = 500;
+H = zeros(p, q);
+
+for i = 1:p
+    for j = 1:q
+        D = sqrt((i - u)^2 + (j - v)^2); 
+        if D <= D0
+            H(i, j) = 1;
+        else
+            H(i, j) = 0;
+        end
+
+    end
+ 
+end
+ 
+
+% 6.Apply the low pass filter 
+F_filtered_image = F_centered_image .* H;
+% 7.Compute the inverse FFT to obtain the filtered image in the spatial domain 
+filtered_image = ifft2(F_filtered_image);
+filtered_image = real(filtered_image);
+% 8.multiply
+filtered_image = filtered_image .* (-1)^(m+n);
+% 9.Crop the top quadrant same as the original image 
+cropped_image = filtered_image(1:m, 1:n);
+%
+% 5. Design Butterworth low pass filter 
+D1 = 400;
+x = 4;
+H1 = zeros(p, q);
+ 
+for i = 1:p
+    for j = 1:q
+        D = sqrt((i - u)^2 + (j - v)^2);
+        H1(i, j) = 1 / (1 + (D1 / D)^(2 * x));
+    end
+end
+% 6.Apply the low pass filter 
+F_filtered_image1 = F_centered_image .* H1;
+
+% 7.Compute the inverse FFT to obtain the filtered image in the spatial domain 
+filtered_image1 = ifft2(F_filtered_image1);
+filtered_image1 = real(filtered_image1);
+
+% 8.multiply
+filtered_image1 = filtered_image1 .* (-1)^(m+n);
+
+% imshow(filtered_image);
+
+% 9.Crop the top quadrant same as the original image 
+cropped_image1 = filtered_image1(1:m, 1:n);
+%
+%5.design gaussian low pass filter 
+D2 = 300;
+H2 = zeros(p, q);
+for i = 1:p
+    for j = 1:q
+        D = sqrt((i - u)^2 + (j - v)^2); 
+        H2(i, j) = exp(-(D^2) / (2 * (D2^2)));
+    end
+end
+% 6.Apply the low pass filter 
+F_filtered_image2 = F_centered_image .* H2;
+% 7.Compute the inverse FFT to obtain the filtered image in the spatial domain 
+filtered_image2 = ifft2(F_filtered_image2);
+filtered_image2 = real(filtered_image2);
+% 8.multiply
+filtered_image2 = filtered_image2 .* (-1)^(m+n);
+% imshow(filtered_image);
+
+% 9.Crop the top quadrant same as the original image 
+cropped_image2 = filtered_image2(1:m, 1:n);
+
+%
+
+figure;
+subplot(3, 3, 1);imshow(a, []); title('Original Image');
+subplot(3, 3, 2);imshow(noise_b, []); title('Noisy Image');
+subplot(3, 3, 3);imshow(cropped_image, []); title('Ideal low pass filtered image');
+ 
+subplot(3, 3, 4);imshow(a, []); title('Original Image');
+subplot(3, 3, 5);imshow(noise_b, []); title('Noisy Image');
+subplot(3, 3, 6);imshow(cropped_image1, []); title('butterworth filtered image'); subplot(3, 3, 7);imshow(a, []); title('Original Image');
+subplot(3, 3, 8);imshow(noise_b, []); title('Noisy Image');
+subplot(3, 3, 9);imshow(cropped_image2, []); title('gaussian filtered image');
+%
+b = cropped_image1;
+% 5. Design high pass filter 
+D3 = 400;
+H3 = zeros(p, q);
+for i = 1:p
+    for j = 1:q
+        D = sqrt((i - u)^2 + (j - v)^2);
+        H3(i, j) = 1 - 1 / (1 + (D3 / D)^(2 * x));
+    end
+end
+% 6. Apply the high pass filter
+F_filtered_image3 = F_centered_image .* H3;
+
+% 7. Compute the inverse FFT to obtain the filtered image in the spatial domain 
+filtered_image3 = ifft2(F_filtered_image3);
+filtered_image3 = real(filtered_image3);
+
+% 8. Multiply
+filtered_image3 = filtered_image3 .* (-1)^(m+n);
+% 9. Crop the top quadrant same as the original image 
+cropped_image3 = filtered_image3(1:m, 1:n);
+
+%
+% 5. Design Butterworth high pass filter 
+D4 = 400;
+H4 = zeros(p, q);
+for i = 1:p
+    for j = 1:q
+        D = sqrt((i - u)^2 + (j - v)^2);
+        H4(i, j) = 1- 1 / (1 + (D4 / D)^(2 * x));
+    end
+end
+
+% 6. Apply the high pass filter 
+F_filtered_image4 = F_centered_image .* H4;
+
+% 7. Compute the inverse FFT to obtain the filtered image in the spatial domain 
+filtered_image4 = ifft2(F_filtered_image4);
+filtered_image4 = real(filtered_image4);
+ 
+% 8. Multiply
+filtered_image4 = filtered_image4 .* (-1)^(m+n);
+
+% 9. Crop the top quadrant same as the original image 
+cropped_image4 = filtered_image4(1:m, 1:n);
+
+%
+% 5. Design Gaussian high pass filter 
+D5 = 300;
+H5 = zeros(p, q);
+
+for i = 1:p
+    for j = 1:q
+        D = sqrt((i - u)^2 + (j - v)^2);
+        H5(i, j) = 1 - exp(-(D^2) / (2 * (D5^2)));
+    end
+end
+
+% 6. Apply the high pass filter 
+F_filtered_image5 = F_centered_image .* H5;
+
+% 7. Compute the inverse FFT to obtain the filtered image in the spatial domain 
+filtered_image5 = ifft2(F_filtered_image5);
+filtered_image5 = real(filtered_image5);
+% 8. Multiply
+filtered_image5 = filtered_image5 .* (-1)^(m+n);
+
+% 9. Crop the top quadrant same as the original image 
+cropped_image5 = filtered_image5(1:m, 1:n);
+figure;
+subplot(3, 3, 1);imshow(a, []); title('Original Image'); subplot(3, 3, 2);imshow(b, []); title('Blurred Image');
+subplot(3, 3, 3);imshow(cropped_image3, []); title('Ideal high pass filtered image'); subplot(3, 3, 4);imshow(a, []); title('Original Image');
+subplot(3, 3, 5);imshow(b, []); title('Blurred image');
+subplot(3, 3, 6);imshow(cropped_image4, []); title('butterworth high pass filtered image'); subplot(3, 3, 7);imshow(a, []); title('Original Image');
+subplot(3, 3, 8);imshow(b, []); title('Blurred Image');
+subplot(3, 3, 9);imshow(cropped_image5, []); title('gaussian high pass filtered image');
+
+% --- MSE and PSNR computation functions ---
+compute_mse = @(orig, test) mean((double(orig(:)) - double(test(:))).^2); compute_psnr = @(orig, test) 10 * log10(255^2 / compute_mse(orig, test));
+
+% --- Calculate MSE and PSNR for low pass filtered images --- 
+mse_ideal_lp = compute_mse(a, cropped_image);
+psnr_ideal_lp = compute_psnr(a, cropped_image);
+ 
+mse_butter_lp = compute_mse(a, cropped_image1); psnr_butter_lp = compute_psnr(a, cropped_image1);
+mse_gauss_lp = compute_mse(a, cropped_image2); psnr_gauss_lp = compute_psnr(a, cropped_image2);
+
+% --- Calculate MSE and PSNR for high pass filtered images --- 
+mse_ideal_hp = compute_mse(a, cropped_image3);
+psnr_ideal_hp = compute_psnr(a, cropped_image3);
+mse_butter_hp = compute_mse(a, cropped_image4); psnr_butter_hp = compute_psnr(a, cropped_image4);
+
+mse_gauss_hp = compute_mse(a, cropped_image5); psnr_gauss_hp = compute_psnr(a, cropped_image5);
+
+% ---- Print MSE & PSNR table for all results ---- fprintf('\n%-30s %-10s %-10s\n', 'Filter', 'MSE', 'PSNR (dB)');
+fprintf('%-30s %-10.2f %-10.2f\n', 'Ideal Low Pass', mse_ideal_lp, psnr_ideal_lp); fprintf('%-30s %-10.2f %-10.2f\n', 'Butterworth Low Pass', mse_butter_lp, psnr_butter_lp);
+fprintf('%-30s %-10.2f %-10.2f\n', 'Gaussian Low Pass', mse_gauss_lp, psnr_gauss_lp);
+fprintf('%-30s %-10.2f %-10.2f\n', 'Ideal High Pass', mse_ideal_hp, psnr_ideal_hp);
+fprintf('%-30s %-10.2f %-10.2f\n', 'Butterworth High Pass', mse_butter_hp, psnr_butter_hp);
+fprintf('%-30s %-10.2f %-10.2f\n', 'Gaussian High Pass', mse_gauss_hp, psnr_gauss_hp);
+
+clc;
+close all;
+figure;
+
+% Read an Image and convert it to a grayscale image
+subplot(2,3,1);
+I = imread("coins.png");
+I_gray = im2gray(I);
+imshow(I_gray)
+title('Original Gray Image');
+
+% Add gaussian noise to image
+I_noisy = imnoise(I_gray, 'gaussian', 0, 0.01);
+subplot(2,3,2);
+imshow(I_noisy);
+title('Noisy Gray Image');
+
+% Apply zero padding to f(x,y) to get an image of size P*Q such that 2M and
+% Q=2N
+[M, N] = size(I_noisy);
+I_padded = zeros(2*M, 2*N);
+for row = 1:M
+    for col = 1:N
+        I_padded(row, col) = I_noisy(row, col);
+    end
+end
+subplot(2,3,3);
+imshow(uint8(I_padded));
+title('Padded Image');
+
+% Multiply the padded image by (-1)^(x+y) to center the transform to u =
+% P/2 and v = Q/2
+I_centered = zeros(2*M, 2*N);
+for row = 1:2*M
+    for col = 1:2*N
+        I_centered(row, col) = I_padded(row, col)*((-1)^(row+col));
+    end
+end
+subplot(2,3,4);
+imshow(uint8(I_centered));
+title('Centered Padded Image');
+
+% Perform the 2D Discrete Fourier Transform on the centered image
+I_transform = fft2(I_padded);
+I_transform_shifted = fftshift(I_transform);
+subplot(2,3,5);
+imshow(log(1 + abs(I_transform_shifted)), []);
+title('Magnitude Spectrum');
+
+function I_out = reconstruct_filtered_image(I_filtered, M, N)
+% Inverse shift before ifft2
+I_filtered_image = ifft2(ifftshift(I_filtered));
+I_filtered_image = real(I_filtered_image);
+
+% Crop to original image size
+I_out = I_filtered_image(1:M, 1:N);
+end
+
+D0 = 1350;
+[x, y] = meshgrid(-N:N-1, -M:M-1);
+D = sqrt(x.^2 + y.^2);
+
+% Gaussian Low Pass Filter
+sigma = 100;
+H_gaussian = exp(-(D.^2) / (2*sigma^2));
+I_filtered_gaussian = I_transform_shifted .* H_gaussian;
+I_filtered_gaussian_image = reconstruct_filtered_image(I_filtered_gaussian, M, N);
+subplot(2,2,4);
+imshow(I_filtered_gaussian_image, []);
+title('Filtered Image with Gaussian Low Pass Filter');
+%-------------------------------------------------------------
+
+%% Unsharp masking
+figure;
+
+I_blur = uint8(imgaussfilt(I_gray, 3));
+subplot(2,2,1);
+imshow(I_blur, []);
+title('Blurry Image');
+
+I_mask = I_blur - uint8(I_filtered_gaussian_image);
+subplot(2,2,2);
+imshow(I_mask, []);
+title('Mask');
+
+I_unsharp_unit = I_blur + I_mask;
+subplot(2,2,3);
+imshow(I_unsharp_unit, []);
+title('Unsharped Image');
+
+I_unsharp_three = I_blur + 3 * I_mask;
+subplot(2,2,4);
+imshow(I_unsharp_three, []);
+title('Highboost Image');
+%---------------------------------------------------------
+
+
+5.
+clc;
+close all;
+a = imread("trailer.jpg");
+% c = imnoise(a, "gaussian") ;
+% c = imnoise(a, "salt & pepper");
+c = imnoise(a, "speckle");
+
+% --- Get Noisy Intensity Channel (for filtering) ---
+c_double = im2double(c);
+hsv_c = rgb2hsv(c_double);
+h = hsv_c(:,:,1);
+s = hsv_c(:,:,2);
+i = hsv_c(:,:,3); 
+
+% --- Get Original "Ground Truth" Intensity Channel (for comparison) ---
+a_double = im2double(a); 
+hsv_a = rgb2hsv(a_double);
+i_original = hsv_a(:,:,3); 
+
+
+% Pad the noisy intensity image
+i_padded = padarray(i, [1, 1], 'replicate', 'both');
+[m, n] = size(i_padded);
+
+% Pre-allocate output images
+filtered_i_padded = zeros(size(i_padded));
+filtered_i_padded1 = zeros(size(i_padded));
+filtered_i_padded2 = zeros(size(i_padded));
+filtered_i_padded3 = zeros(size(i_padded));
+filtered_i_padded4 = zeros(size(i_padded));
+filtered_i_padded5 = zeros(size(i_padded));
+filtered_i_padded6 = zeros(size(i_padded));
+filtered_i_padded7 = zeros(size(i_padded)); % <-- This was missing
+
+% --- NEW: Initialize arrays to store results ---
+numFilters = 8;
+filterNames = [
+    "Arithmetic Mean"; 
+    "Geometric Mean"; 
+    "Weighted Average"; 
+    "Minimum"; 
+    "Maximum"; 
+    "Midpoint"; 
+    "Median"; 
+    "Alpha-Trimmed Mean"
+];
+executionTimes = zeros(numFilters, 1);
+mseValues = zeros(numFilters, 1);
+psnrValues = zeros(numFilters, 1);
+
+
+% --- 3. RUN FILTERS ---
+
+% 1. Apply Arithmetic Mean Filter
+tic;
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        filtered_i_padded(x, y) = mean(neighbors(:));
+    end
+end
+filtered_i = filtered_i_padded(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(1) = toc;
+mseValues(1) = immse(filtered_i, i_original);
+psnrValues(1) = psnr(filtered_i, i_original);
+
+
+% 2. Apply Geometric Mean Filter
+tic;
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        filtered_i_padded1(x, y) = exp(mean(log(neighbors(:) + eps)));
+    end
+end
+filtered_i1 = filtered_i_padded1(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(2) = toc;
+mseValues(2) = immse(filtered_i1, i_original);
+psnrValues(2) = psnr(filtered_i1, i_original);
+
+
+% 3. Apply Weighted Average Filter
+tic;
+weights = [1, 2, 1; 2, 4, 2; 1, 2, 1] / 16;
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        filtered_i_padded2(x, y) = sum(sum(neighbors .* weights));
+    end
+end
+filtered_i2 = filtered_i_padded2(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(3) = toc;
+mseValues(3) = immse(filtered_i2, i_original);
+psnrValues(3) = psnr(filtered_i2, i_original);
+
+
+% 4. Apply Minimum Filter
+tic;
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        filtered_i_padded3(x, y) = min(neighbors(:));
+    end
+end
+filtered_i3 = filtered_i_padded3(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(4) = toc;
+mseValues(4) = immse(filtered_i3, i_original);
+psnrValues(4) = psnr(filtered_i3, i_original);
+
+
+% 5. Apply Maximum Filter
+tic;
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        filtered_i_padded4(x, y) = max(neighbors(:));
+    end
+end
+filtered_i4 = filtered_i_padded4(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(5) = toc;
+mseValues(5) = immse(filtered_i4, i_original);
+psnrValues(5) = psnr(filtered_i4, i_original);
+
+
+% 6. Apply Midpoint Filter
+tic;
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        filtered_i_padded5(x, y) = (min(neighbors(:)) + max(neighbors(:))) / 2;
+    end
+end
+filtered_i5 = filtered_i_padded5(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(6) = toc;
+mseValues(6) = immse(filtered_i5, i_original);
+psnrValues(6) = psnr(filtered_i5, i_original);
+
+
+% 7. Apply Median Filter
+tic;
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        filtered_i_padded6(x, y) = median(neighbors(:));
+    end
+end
+filtered_i6 = filtered_i_padded6(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(7) = toc;
+mseValues(7) = immse(filtered_i6, i_original);
+psnrValues(7) = psnr(filtered_i6, i_original);
+
+
+% 8. Apply Alpha Trimmed Mean Filter
+tic;
+alpha = 2; % Using alpha=2 as in your previous code (trims 2 from each end)
+for x = 2:m-1
+    for y = 2:n-1
+        neighbors = i_padded(x-1:x+1, y-1:y+1); 
+        sorted_neighbors = sort(neighbors(:));
+        trimmed_neighbors = sorted_neighbors((alpha+1):(end-alpha));
+        filtered_i_padded7(x, y) = mean(trimmed_neighbors);
+    end
+end
+filtered_i7 = filtered_i_padded7(2:end-1, 2:end-1);
+% --- Store metrics ---
+executionTimes(8) = toc;
+mseValues(8) = immse(filtered_i7, i_original);
+psnrValues(8) = psnr(filtered_i7, i_original);
+
+
+% --- 4. DISPLAY SUBPLOTS (Unchanged) ---
+figure;
+subplot(3, 3, 1); imshow(filtered_i); title('Arithmetic Mean');
+subplot(3, 3, 2); imshow(filtered_i1); title('Geometric Mean');
+subplot(3, 3, 3); imshow(filtered_i2); title('Weighted Average');
+subplot(3, 3, 4); imshow(filtered_i3); title('Minimum');
+subplot(3, 3, 5); imshow(filtered_i4); title('Maximum');
+subplot(3, 3, 6); imshow(filtered_i5); title('Midpoint');
+subplot(3, 3, 7); imshow(filtered_i6); title('Median');
+subplot(3, 3, 8); imshow(filtered_i7); title('Alpha Trimmed Mean');
+sgtitle('Filtered Intensity (V) Channels');
+
+
+% --- 5. NEW: Display Results in a Table ---
+fprintf('\n--- Filter Performance (on Intensity Channel vs. Original Intensity) ---\n');
+
+% Create the table
+resultsTable = table(filterNames, executionTimes, mseValues, psnrValues);
+
+% Rename column headers for clarity
+resultsTable.Properties.VariableNames = ["Filter_Type", "Time_sec", "MSE", "PSNR"];
+
+% Display the table
+disp(resultsTable);
+
+% --- Optional: Display best filter ---
+[maxPSNR, bestFilterIndex] = max(psnrValues);
+fprintf('\nBest Filter (Highest PSNR): %s (PSNR: %.4f)\n', ...
+    filterNames(bestFilterIndex), maxPSNR);
+
+[minMSE, bestFilterIndexMSE] = min(mseValues);
+fprintf('Best Filter (Lowest MSE):   %s (MSE: %.4f)\n', ...
+    filterNames(bestFilterIndexMSE), minMSE);
+
+6.
+a = imread("cameraman.tif");
+b = im2gray(a);
+
+t = 128;
+n = 50;
+
+for i = 1:n
+
+    segmentedImg = b > t;
+    
+    m1 = mean(b(segmentedImg)); 
+    m2 = mean(b(~segmentedImg));
+    
+    t_new = (m1 + m2) / 2;
+
+    d_t = t - t_new;
+
+    if abs(d_t) < 0.001
+        break;
+    else 
+        t = t_new;
+    end
+    
+end
+
+disp(['Final threshold (t): ', num2str(t)]);
+fprintf('Change in threshold (d_t):%.3f\n', d_t);
+
+figure;
+subplot(1,2,1);imshow(b);title("Greyscale image");
+subplot(1,2,2);imshow(segmentedImg);title("segmented image");
+
+
+clear;
+close all ;
+
+a = imread("cameraman.tif");
+c = im2gray(a);
+I = imnoise(c,"gaussian");
+
+
+%% Otsu's Optimal global thresholding
+[counts, binCenters] = histcounts(I, 256);
+probabilities = counts / sum(counts);
+
+cummulativeP = zeros(1, 256);
+for i = 1: 256
+    cummulativeP(i) = sum(probabilities(1:i));
+end
+
+cummulativeMean = zeros(1, 256);
+for i = 1: 256
+    cummulativeMean(i) = sum((1:i) .* probabilities(1:i));
+
+end
+
+globalMean = sum((1:256).* probabilities(1:256));
+
+classVariance = zeros(1, 256);
+for i = 1: 256
+    classVariance(i) = (globalMean*cummulativeP(i) - cummulativeMean(i)).^2/(cummulativeP(i)*(1 - cummulativeP(i)));
+end
+
+[~, optimalThresholdIndex] = max(classVariance);
+optimalThresholdValue = optimalThresholdIndex - 1;
+binaryOtsuI = I > optimalThresholdValue;
+segmentedOtsuI = I .* uint8(binaryOtsuI);
+
+figure;
+subplot(2,1,1);
+imshow(segmentedOtsuI);
+title('Segmented Image using Basic Thresholding');
+title(sprintf('Segmented Image using Basic Thresholding \nwith threshold value of %.2f', optimalThresholdIndex));
+
+7.
+clc; clear;
+img = imread('peppers.png'); img = im2double(img); [height, width, ~] = size(img);
+pixels = reshape(img, height*width, 3);
+K_all = [2 4 10 16 32 64 100 128]; maxIterations = [5 50 100];
+for mx = 1:3
+    maxIter = maxIterations(mx); all_images = {};
+    for nk = 1:8
+        K = K_all(nk);
+        centroids = rand(K, 3);
+        for iter = 1:maxIter
+            distances = zeros(size(pixels, 1), K);
+            for k = 1:K
+                diff = pixels - centroids(k, :);
+                distances(:,k) = sum(diff.^2, 2);
+            end
+            [~, labels] = min(distances, [], 2);
+            for k = 1:K
+                clusterPixels = pixels(labels == k, :);
+                if size(clusterPixels, 1) > 0
+                    centroids(k, :) = mean(clusterPixels, 1);
+                else
+                    centroids(k, :) = rand(1, 3);
+                end
+            end
+        end
+        segmented = centroids(labels, :);
+        segImg = reshape(segmented, height, width, 3);
+        all_images{nk} = segImg;
+    end
+    figure('Position', [50, 50, 1400, 900]); tiledlayout(3, 3, 'Padding', 'tight', 'TileSpacing', 'tight');
+    sgtitle(sprintf('Maximum no. of iterations = %d', maxIter), 'FontSize', 14);
+    nexttile; imshow(img); title('Original');
+    nexttile; imshow(all_images{1}); title(['Segmented (K=' num2str(K_all(1)) ')']);
+    nexttile; imshow(all_images{2}); title(['Segmented (K=' num2str(K_all(2)) ')']);
+    nexttile; imshow(all_images{3}); title(['Segmented (K=' num2str(K_all(3)) ')']);
+    nexttile; imshow(all_images{4}); title(['Segmented (K=' num2str(K_all(4)) ')']);
+    nexttile; imshow(all_images{5}); title(['Segmented (K=' num2str(K_all(5)) ')']);
+    nexttile; imshow(all_images{6}); title(['Segmented (K=' num2str(K_all(6)) ')']);
+    nexttile; imshow(all_images{7}); title(['Segmented (K=' num2str(K_all(7)) ')']);
+    nexttile; imshow(all_images{8}); title(['Segmented (K=' num2str(K_all(8)) ')']);
+end
